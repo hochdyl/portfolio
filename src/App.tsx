@@ -5,7 +5,7 @@ function App() {
     const refContainer = useRef<HTMLElement>(null);
     const [scrollValue, setScrollValue] = useState<number>(0)
 
-    const scrollStrength = 300
+    const scrollStrength = 100
 
     // Todo : Timeout entre chaque tick de scroll pour ne pas aller trop vite
 
@@ -17,7 +17,7 @@ function App() {
         if (scrollableContainer.current && scrollableContainer.current instanceof HTMLElement) {
             const getUpdatedScrollValue = (delta: number) => {
                 const min = 0
-                const max = scrollableContainer.current!.offsetWidth
+                const max = scrollableContainer.current!.clientWidth
 
                 return delta > 0 ?
                     scrollValue + scrollStrength > max ? max : scrollValue + scrollStrength
@@ -28,10 +28,10 @@ function App() {
             const onScroll = (e: WheelEvent) => {
                 const newValue = getUpdatedScrollValue(e.deltaY)
 
-                scrollableContainer.current!.scrollTo({
-                    left: newValue,
-                    behavior: 'smooth'
-                });
+                // scrollableContainer.current!.scrollTo({
+                //     left: newValue,
+                //     behavior: 'smooth'
+                // });
                 console.log(e)
                 setScrollValue(newValue)
                 console.log(newValue)
@@ -50,13 +50,9 @@ function App() {
     return (
         <main>
             <header>HOCHET Dylan</header>
-            <section className="horizontal-scrollable" ref={refContainer}>
-                <div className="box">content</div>
-                <div className="box">content</div>
-                <div className="box">content</div>
-                <div className="box">content</div>
-                <div className="box">content</div>
-                <div className="box">content</div>
+            <section className="horizontal-scrollable" style={{transform: `translate(-${scrollValue}px, 0px)`}} ref={refContainer}>
+                <div className="panel">content</div>
+                <div className="panel backend">content</div>
             </section>
         </main>
     );

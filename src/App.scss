@@ -1,32 +1,48 @@
+@import "variables";
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  overflow: hidden;
 }
 
 main {
   display: flex;
   flex-flow: row nowrap;
-  background-color: #111111;
+  background-color: $primary;
   height: 100vh;
 
   header {
+    z-index: 1;
     width: 5vw;
     padding: 5px;
-    background-color: darkslateblue;
+    background-color: $primary;
+    color: $secondary;
   }
 
   section {
     display: flex;
     flex-flow: row nowrap;
     flex: 1;
-    overflow-x: scroll;
-    padding: 5px;
+    position: fixed;
+    height: 100%;
+    top: 0;
+    right: 0;
+    left: 5vw;
+    transition: all .5s cubic-bezier(0.2, .84, .5, 1);
+    transform-origin:0 0;
+    transform: translate3d(0px, 0px, 0px);
 
-    .box {
-      width: 500px;
+    .panel {
+      width: 95vw;
       flex-shrink: 0;
       background-color: darkslategrey;
+      padding: 20px;
+
+      &.backend {
+        background-color: red;
+      }
     }
   }
 }
