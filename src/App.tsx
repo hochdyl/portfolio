@@ -2,59 +2,113 @@ import React, {useEffect, useRef, useState} from 'react';
 import './App.scss';
 
 function App() {
-    const refContainer = useRef<HTMLElement>(null);
-    const [scrollValue, setScrollValue] = useState<number>(0)
+    const refMainWrapper = useRef<HTMLDivElement>(null);
+    const refMainContainer = useRef<HTMLElement>(null);
+    const [containerPosition, setContainerPosition] = useState<number>(0)
 
     const scrollStrength = 100
 
-    // Todo : Timeout entre chaque tick de scroll pour ne pas aller trop vite
-
-    // On load
     useEffect(() => {
-        let scrollableContainer = refContainer
+        let mainWrapper = refMainWrapper
+        let mainContainer = refMainContainer
+        let resizeTimer: string | number | NodeJS.Timeout | undefined
 
         // Check if ref is loaded
-        if (scrollableContainer.current && scrollableContainer.current instanceof HTMLElement) {
-            const getUpdatedScrollValue = (delta: number) => {
-                const min = 0
-                const max = scrollableContainer.current!.clientWidth
+        if (mainContainer.current && mainWrapper.current) {
+            const resizeHandler = () => {
+                clearTimeout(resizeTimer)
+                resizeTimer = setTimeout(() => {
+                    onResize()
+                }, 100);
+            }
 
-                return delta > 0 ?
-                    scrollValue + scrollStrength > max ? max : scrollValue + scrollStrength
-                    :
-                    scrollValue - scrollStrength < min ? min : scrollValue - scrollStrength
+            const onResize = () => {
+                console.log('wrapper size : ', mainWrapper.current!.clientWidth)
+                calculateNewPosition(containerPosition)
             }
 
             const onScroll = (e: WheelEvent) => {
-                const newValue = getUpdatedScrollValue(e.deltaY)
+                e.preventDefault()
 
-                // scrollableContainer.current!.scrollTo({
-                //     left: newValue,
-                //     behavior: 'smooth'
-                // });
-                console.log(e)
-                setScrollValue(newValue)
-                console.log(newValue)
+                // Is scrolling down ?
+                let newPosition = e.deltaY > 0 ?
+                    containerPosition + scrollStrength : containerPosition - scrollStrength
+
+                calculateNewPosition(newPosition)
             }
 
-            // Update horizontal scroll value on mouse wheel
-            scrollableContainer.current.addEventListener("wheel", onScroll, false);
+            const calculateNewPosition = (newPosition: number) => {
+                const min = 0
+                const max = mainContainer.current!.clientWidth - mainWrapper.current!.clientWidth
+
+                if (newPosition > max) {
+                    newPosition = max
+                } else if (newPosition < min) {
+                    newPosition = min
+                }
+
+                setContainerPosition(newPosition)
+            }
+
+            mainContainer.current.addEventListener("wheel", onScroll);
+            window.addEventListener("resize", resizeHandler);
 
             // Cleanup
             return () => {
-                scrollableContainer.current!.removeEventListener("wheel", onScroll, false)
+                mainContainer.current!.removeEventListener("wheel", onScroll)
+                window.addEventListener("resize", resizeHandler);
+
             }
         }
-    }, [scrollValue]);
+    }, [containerPosition]);
+
+    const getContainerPosition = () => {
+        return {transform: `translate(-${containerPosition}px, 0px)`}
+    }
 
     return (
-        <main>
+        <>
             <header>HOCHET Dylan</header>
-            <section className="horizontal-scrollable" style={{transform: `translate(-${scrollValue}px, 0px)`}} ref={refContainer}>
-                <div className="panel">content</div>
-                <div className="panel backend">content</div>
-            </section>
-        </main>
+            <div className="main-wrapper" ref={refMainWrapper}>
+                <main style={getContainerPosition()} ref={refMainContainer}>
+                    <section>start</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>content</section>
+                    <section>end</section>
+                </main>
+            </div>
+        </>
     );
 }
 
