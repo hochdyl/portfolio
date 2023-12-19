@@ -11,20 +11,17 @@ function App() {
     useEffect(() => {
         let mainWrapper = refMainWrapper
         let mainContainer = refMainContainer
-        let resizeTimer: string | number | NodeJS.Timeout | undefined
+        let resizeTimer: NodeJS.Timeout
 
         // Check if ref is loaded
         if (mainContainer.current && mainWrapper.current) {
-            const resizeHandler = () => {
+
+            // Prevent firing too many event for performance issues
+            const onResize = () => {
                 clearTimeout(resizeTimer)
                 resizeTimer = setTimeout(() => {
-                    onResize()
+                    calculatePosition(containerPosition)
                 }, 100);
-            }
-
-            const onResize = () => {
-                console.log('wrapper size : ', mainWrapper.current!.clientWidth)
-                calculateNewPosition(containerPosition)
             }
 
             const onScroll = (e: WheelEvent) => {
@@ -34,10 +31,10 @@ function App() {
                 let newPosition = e.deltaY > 0 ?
                     containerPosition + scrollStrength : containerPosition - scrollStrength
 
-                calculateNewPosition(newPosition)
+                calculatePosition(newPosition)
             }
 
-            const calculateNewPosition = (newPosition: number) => {
+            const calculatePosition = (newPosition: number) => {
                 const min = 0
                 const max = mainContainer.current!.clientWidth - mainWrapper.current!.clientWidth
 
@@ -51,12 +48,12 @@ function App() {
             }
 
             mainContainer.current.addEventListener("wheel", onScroll);
-            window.addEventListener("resize", resizeHandler);
+            window.addEventListener("resize", onResize);
 
             // Cleanup
             return () => {
                 mainContainer.current!.removeEventListener("wheel", onScroll)
-                window.addEventListener("resize", resizeHandler);
+                window.removeEventListener("resize", onResize);
 
             }
         }
